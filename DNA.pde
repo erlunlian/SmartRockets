@@ -1,6 +1,9 @@
 public class Dna {
 
     PVector[] genes; // array of forces
+    float red;
+    float blue;
+    float green;
 
     public Dna(PVector[] newGenes) {
         genes = newGenes;
@@ -12,6 +15,9 @@ public class Dna {
             genes[i] = (PVector.random2D());
             genes[i].setMag(maxAcc);
         }
+        red = random(255);
+        blue = random(255);
+        green = random(255);
     }
 
     // Mutates dna
@@ -24,6 +30,12 @@ public class Dna {
             genes[i] = (PVector.random2D());
             genes[i].setMag(maxAcc);
         }
+        if (random(1) < 0.1)
+          red = random(255);
+        if (random(1) < 0.1)
+          green = random(255);
+        if (random(1) < 0.1)
+          blue = random(255);
     }
 
     // Creating childDna from two parents' dna
@@ -31,7 +43,7 @@ public class Dna {
 
         // Initializes new genes
         PVector[] newGenes = new PVector[lifespan];
-
+  
         // Pick a random int as middle
         int mid = floor(random(genes.length));
 
@@ -41,8 +53,13 @@ public class Dna {
             else
                 newGenes[i] = partner.genes[i];
         }
+        
+        Dna newDna = new Dna(newGenes);
+        newDna.red = (red + partner.red) / 2;
+        newDna.green = (green + partner.green) / 2;
+        newDna.blue = (blue + partner.blue) / 2;
 
-        return new Dna(newGenes);
+        return newDna;
 
     }
 

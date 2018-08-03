@@ -7,11 +7,13 @@ public class Population {
     Rocket[] matingPool;    // Array of rockets for mating
     float maxFitness;       // Maximum fitness out of all rockets
     int newSize;            // Size of new array
+    int PbestTime;           // Best time
     public Population() {
-        size = 200;
+        size = populationSize;
         rockets = new Rocket[size];
         maxFitness = 0;
         newSize = 0;
+        PbestTime = lifespan;
 
         // Adds new rockets to generation
         for (int i = 0; i < size; i++) {
@@ -24,6 +26,9 @@ public class Population {
         for (Rocket r: rockets) {
             r.show();
             r.update();
+            if (r.finalTime < PbestTime)
+              PbestTime = bestTime = r.finalTime;
+            
         }
     }
 
@@ -91,10 +96,6 @@ public class Population {
             // Add new child with new dna to new population of next generation
             newRockets[i] = new Rocket(childDna);
 
-            // Color inheritance
-            newRockets[i].red = (parentA.red + parentB.red) / 2;
-            newRockets[i].green = (parentA.green + parentB.green) / 2;
-            newRockets[i].blue = (parentA.blue + parentB.blue) / 2;
         }
 
         for (int i = size - randomNum; i < size; i++) {

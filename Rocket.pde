@@ -11,10 +11,8 @@ public class Rocket {
     float maxDistance;          // Max distance from target
     boolean crashed;            // Whether rocket crashed or not
     boolean completed;          // Whether rocket reached target or not
-    int timeTaken;              // Time taken for rocket to reach target
-    float red;                  // Color (visual dna family)
-    float green;                  // Color (visual dna family)
-    float blue;                  // Color (visual dna family)
+    int timeTaken;              // Continously updated time taken for rocket to reach target
+    int finalTime;              // Final time taken for rocket to reach target
 
     // New random rocket constructor
     public Rocket() {
@@ -24,9 +22,8 @@ public class Rocket {
         dna = new Dna(); // Array of directions to go
         maxDistance = dist(target.x, target.y, 0, height) + 10;
         crashed = false;
-        red = random(255);
-        blue = random(255);
-        green = random(255);
+        timeTaken = 0;
+        finalTime = lifespan;
 
     }
 
@@ -39,6 +36,8 @@ public class Rocket {
         dna = childDna;
         maxDistance = dist(target.x, target.y, 0, height) + 10;
         crashed = false;
+        timeTaken = 0;
+        finalTime = lifespan;
     }
 
     // Fitness determining function
@@ -46,17 +45,24 @@ public class Rocket {
         float d = PVector.dist(pos, target);
         fitness = map(d, 0, maxDistance, maxDistance, 0);
 
-        if (completed)
-            fitness *= 3 * (lifespan / timeTaken);
-
+        if (completed) {
+            float factor = lifespan / finalTime;
+            if (factor < 1)
+              factor = 1;
+            fitness = (float) Math.pow(fitness, lifespan / finalTime);
+        }
+        
+        if (pos.y > target.y && pos.y < height / 2)
+          fitness *= 2;
+        
         if (crashed)
-            fitness /= 3;
+            fitness /= 5;
 
         if (pos.y > height * 0.6)
-            fitness /= 2;
+            fitness /= 3;
 
         if (pos.x < width / 2 - 200 || pos.x > width / 2 + 200)
-            fitness /= 2;
+            fitness /= 3;
     }
 
     // Adding force to particular rocket object
@@ -77,13 +83,14 @@ public class Rocket {
 
         else if (PVector.dist(pos, target) < targetRadius) {
             completed = true;
-            timeTaken = lifespan - counter;
+            finalTime = timeTaken;
         }
 
         if (!completed && !crashed) {
             pos.add(vel);
             vel.add(acc);
             acc.mult(0);
+            timeTaken++;
 
             // Applying force from Dna.genes array of forces
             addForce(dna.genes[counter]);
@@ -96,7 +103,7 @@ public class Rocket {
         pushMatrix();
 
         noStroke();
-        fill(red, blue, green, 150);
+        fill(dna.red, dna.blue, dna.green, 150);
 
         translate(pos.x, pos.y);
         rotate(vel.heading());

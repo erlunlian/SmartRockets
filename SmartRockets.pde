@@ -2,12 +2,14 @@ import java.util.*;
 
 Population p;                           // Population of rockets
 PVector target = new PVector(400, 50);  // Target
-int lifespan = 900;                    // How long each generation lasts
+int lifespan = 1000;                    // How long each generation lasts
 int counter = 0;                        // Counter used to loop through generations
-int generation = 0;                     // Counts generation number
+int generation = 1;                     // Counts generation number
 int targetRadius = 10;                  // Size of target
 float maxAcc = 0.1;                     // Maximum acceleration of rockets
-int randomNum = 50;                     // Number of random rockets every generation
+int bestTime = lifespan;                // Best time of all 
+int populationSize = 500;               // Population size of each geneartion
+int randomNum = populationSize / 10;     // Number of random rockets every generation (set to 0 if you want to see genocide)
 
 
 void setup() {
@@ -29,8 +31,13 @@ void draw() {
     // Text on screen
     pushMatrix();
     textSize(20);
-    text("Lifespan: " + (lifespan - counter), 30, height - 30);
-    text("Generation: " + generation, 30, height - 60);
+    text("Time: " + (counter), 30, height - 30);
+    if (bestTime < lifespan)
+      text("Best Time : " + bestTime, 30, height - 60);
+    else
+      text("Best Time : None", 30, height - 60);
+    text("Generation: " + generation, 30, height - 90);
+    text("Lifespan: " + lifespan, 30, height - 120);
     popMatrix();
     counter++;
     counter %= lifespan;
@@ -40,7 +47,7 @@ void draw() {
 
     // New generation of population
     if (p.allCrashed())
-        counter = 0;
+        counter = lifespan;
 
     if(counter == 0) {
         generation++;
